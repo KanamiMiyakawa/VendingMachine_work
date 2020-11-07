@@ -8,8 +8,18 @@
 class ItemManagement
 
   def initialize
-    p "商品を入れ替えるための初期パスワードを設定してください"
+    p "初期設定：商品を入れ替えるための初期パスワードを設定してください"
     @password = gets.chomp.to_s
+    puts "初期設定：いくつまでの商品を格納できるようにしますか？\n３以上の数を入力してください"
+    loop do
+      n = gets.chomp.to_i
+      if n > 2
+        @item_limit = n
+        break
+      else
+        p "有効な数字かつ3以上を入力してください"
+      end
+    end
   end
 
   def item_add
@@ -31,12 +41,7 @@ class ItemManagement
     p 'パスワードを入力してください'
     password = gets.chomp
     if password.to_s == @password
-      n = 0
-      @items.each do |item|
-        puts "商品番号#{n}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
-        p '---------------------------'
-        n += 1
-      end
+      display
       p "削除する商品の番号を入力"
       select_item = gets.chomp.to_i
       puts "商品番号#{select_item} 名前：#{@items[select_item][:name]}を削除しました"
@@ -46,9 +51,17 @@ class ItemManagement
   end
 
   def display
+    n = 0
+    puts "\n---------------------------"
     @items.each do |item|
-      puts "名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
-      p '---------------------------'
+      puts "\n商品番号：#{n}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
+      if can_buy?(n)
+        ">購入できます<"
+      else
+        ">現在購入できません<"
+      end
+      puts "\n---------------------------\n"
+      n += 1
     end
   end
 
@@ -107,7 +120,6 @@ class VendingMachineModel < ItemManagement
   end
 
   def select_item
-    super
     puts '商品番号を選択してください'
     select = gets.chomp.to_i
     if select < @items.size
@@ -214,17 +226,6 @@ class VendingMachineInterface < VendingMachineModel
       puts "適切な数字を入れてください"
       menu
     end
-    # if choice == 0
-    #   before_throw_money
-    # elsif choice == 1
-    #   select_item
-    # elsif choice == 2
-    #   return_money
-    # elsif choice == 3
-    # else
-    #   puts "適切な数字を入れてください"
-    #   menu
-    # end
   end
 end
 
