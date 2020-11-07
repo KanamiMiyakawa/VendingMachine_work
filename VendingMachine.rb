@@ -1,5 +1,9 @@
   # itemsをどの変数で管理するか クラスインスタンス変数
   # passwordをどの変数で管理するか
+  # VendingMachineはデータ保持や加工を担当 railsのモデルのような働き
+  # VendingMachineInterfaceはメソッドをを繋ぎ、インターフェイスをやる
+  # ItemManagementClassを継承した、VendingMachine以外を想定して軽く作らないか そのほうがItemManagementClassを定義しやすいのでは
+  # Rspec spec/models/systems 違い modelsでは何をテストしているの
 
 class ItemManagement
 
@@ -36,7 +40,7 @@ class ItemManagement
       @items.delete_at(select_item)
     end
   end
-  
+
   def display
     @items.each do |item|
       puts "名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
