@@ -52,7 +52,7 @@ end
 # VendingMachineはデータ保持や加工を担当　railsのモデルのような働き
 # VendingMachineInterfaceはメソッドをを繋ぎ、インターフェイスをやる
 
-class VendingMachine < ItemManagement
+class VendingMachineModel < ItemManagement
   attr_reader :slot_money, :sales_money
   MONEY = [10, 50, 100, 500, 1000].freeze
 
@@ -116,7 +116,7 @@ class VendingMachine < ItemManagement
   end
 end
 
-class VendingMachineInterface < VendingMachine
+class VendingMachineInterface < VendingMachineModel
   def initialize
     super
     puts "いらっしゃいませ！！"
