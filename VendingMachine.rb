@@ -8,36 +8,40 @@
 class ItemManagement
 
   def initialize
-    @password = "0000"
+    p "商品を入れ替えるための初期パスワードを設定してください"
+    @password = gets.chomp.to_s
   end
 
   def item_add
-    p '4桁のパスワードを入力してください'
+    p 'パスワードを入力してください'
     password = gets.chomp
-    if password.to_s == @@password
+    if password.to_s == @password
       p '値段を設定してください'
       price = gets.to_i
       p '商品名を設定してください'
-      name = gets.chomp
+      name = gets.chomp.to_s
       p '初期在庫数を設定してください'
       quantity = gets.to_i
       @items << {price: price, name: name, quantity: quantity}
+      item_menu
     end
   end
 
   def item_delete
-    p '4桁のパスワードを入力してください'
+    p 'パスワードを入力してください'
     password = gets.chomp
     if password.to_s == @password
-      p @items
       n = 0
       @items.each do |item|
         puts "商品番号#{n}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
         p '---------------------------'
         n += 1
       end
+      p "削除する商品の番号を入力"
       select_item = gets.chomp.to_i
+      puts "商品番号#{select_item} 名前：#{@items[select_item][:name]}を削除しました"
       @items.delete_at(select_item)
+      item_menu
     end
   end
 
@@ -45,6 +49,28 @@ class ItemManagement
     @items.each do |item|
       puts "名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
       p '---------------------------'
+    end
+  end
+
+  def item_menu
+    puts "0:商品追加\n1:商品削除\n2:商品確認\n3:メニューにもどる"
+    choice = gets.chomp.to_i
+    if choice == 0
+      if @items.size == 3
+        p "商品は３つまでしか格納できません、先に商品を削除してください"
+        item_menu
+      else
+        item_add
+      end
+    elsif choice == 1
+      item_delete
+    elsif choice == 2
+      display
+    elsif choice == 3
+      menu
+    else
+      p "有効な数字を入力してください"
+      item_menu
     end
   end
 end
@@ -173,20 +199,34 @@ class VendingMachineInterface < VendingMachineModel
     puts 'メニューです‼'
     display
     puts "合計金額：#{@slot_money}"
-    puts "0:コイン投入\n1:商品選択\n2:払い戻し"
+    puts "0:コイン投入\n1:商品選択\n2:払い戻し\n3:商品管理画面"
     choice = gets.chomp.to_i
-    if choice == 0
+    case choice
+    when 0
       before_throw_money
-    elsif choice == 1
+    when 1
       select_item
-    elsif choice == 2
+    when 2
       return_money
+    when 3
+      item_menu
     else
       puts "適切な数字を入れてください"
       menu
     end
+    # if choice == 0
+    #   before_throw_money
+    # elsif choice == 1
+    #   select_item
+    # elsif choice == 2
+    #   return_money
+    # elsif choice == 3
+    # else
+    #   puts "適切な数字を入れてください"
+    #   menu
+    # end
   end
 end
 
-ItemManagement.item_delete
-# vm = VendingMachineInterface.new
+#ItemManagement.new
+vm = VendingMachineInterface.new
