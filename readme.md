@@ -1,4 +1,6 @@
 ## ItemManagementを継承するときの注意
+
+### メソッドについての注意
 ItemManagementクラスのitem_menuメソッド '3:メニューにもどる' の
 menuメソッドはクラス内にないので、継承するクラス内に作る必要があります。
 
@@ -20,5 +22,37 @@ def menu
   else
     puts "適切な数字を入れてください"
     menu
+end
+~~~
+
+### インスタンス変数についての注意
+@itemsには{price:#,name:'#',quantity:#}の情報を追加してください
+~~~ruby
+@items = []
+@items << {price:120,name:'cola',quantity:5}
+@items << {price:100,name:'water',quantity:5}
+@items << {price:200,name:'redbull',quantity:5}
+~~~
+
+initializeに、投入金額と売上金額を以下の通りに定義してください
+~~~ruby
+@slot_money = 0
+@sales_money = 0
+~~~
+
+## お手本
+~~~ruby
+include ItemManagement
+attr_reader :slot_money, :sales_money
+MONEY = [10, 50, 100, 500, 1000].freeze
+
+def initialize
+  super
+  @slot_money = 0
+  @sales_money = 0
+  @items = []
+  @items << {price:120,name:'cola',quantity:5}
+  @items << {price:100,name:'water',quantity:5}
+  @items << {price:200,name:'redbull',quantity:5}
 end
 ~~~

@@ -162,30 +162,26 @@ class VendingMachineInterface < VendingMachineModel
     menu
   end
 
-  def before_throw_money
+  def throw_money_interface
     puts "お金を入れてください\n10, 50, 100, 500, 1000"
     money = gets.chomp.to_i
     throw_money(money)
-  end
-
-  def throw_money(money)
-    super
-    after_throw_money
-  end
-
-  def after_throw_money
     puts "合計：#{@slot_money}"
-    puts "0:コイン投入を続ける\n1:メニューへ\n2:払い戻し"
+    puts "0:コイン投入を続ける\n1:戻る"
     choice = gets.chomp.to_i
-    if choice == 0
-      before_throw_money
-    elsif choice == 1
+    # if choice == 0
+    #   throw_money_interface
+    # elsif choice == 1
+    #   menu
+    # else
+    #   puts "適切な数字を入れてください"
+    #   throw_money_interface
+    # end
+    if choice == 1
       menu
-    elsif choice == 2
-      return_money
     else
-      puts "適切な数字を入れてください"
-      after_throw_money
+      puts "適切な数字を入れてください" if choice != 0
+      throw_money_interface 
     end
   end
 
