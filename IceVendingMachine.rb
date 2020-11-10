@@ -44,23 +44,15 @@ module ItemManagement
     end
   end
 
-  def can_buy?(n)
-    if self.slot_money >= @items[n][:price] && @items[n][:quantity] > 0
-      true
-    else
-      false
-    end
-  end
-
   def display
     n = 0
     puts "\n---------------------------"
     @items.each do |item|
       puts "\n商品番号：#{n}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
       if can_buy?(n)
-        puts ">購入できます<"
+        ">購入できます<"
       else
-        puts ">現在購入できません<"
+        ">現在購入できません<"
       end
       puts "\n---------------------------\n"
       n += 1
@@ -92,6 +84,12 @@ end
 
 # VendingMachineはデータ保持や加工を担当 railsのモデルのような働き
 # VendingMachineInterfaceはメソッドをを繋ぎ、インターフェイスをやる
+
+
+# ↓ IceVendingMachineはここから下を変える必要がある
+
+
+
 
 class VendingMachineModel
   include ItemManagement
@@ -134,7 +132,13 @@ class VendingMachineModel
     end
   end
 
-  
+  def can_buy?(n)
+    if @slot_money >= @items[n][:price] && @items[n][:quantity] > 0
+      true
+    else
+      false
+    end
+  end
 
   def get_item(n)
     if can_buy?(n)
