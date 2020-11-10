@@ -1,6 +1,5 @@
 
 module ItemManagement
-
   def initialize
     p "初期設定：商品を入れ替えるための初期パスワードを設定してください"
     @password = gets.chomp.to_s
@@ -68,6 +67,8 @@ module ItemManagement
   end
 
   def item_menu
+    puts "アイテムメニューです"
+    puts "売上金額:#{self.sales_money}"
     puts "0:商品追加\n1:商品削除\n2:商品確認\n3:メニューにもどる"
     choice = gets.chomp.to_i
     if choice == 0
@@ -118,8 +119,9 @@ class VendingMachineModel
   end
 
   def return_money
-    puts @slot_money
+    puts "#{@slot_money}円返却しました"
     @slot_money = 0
+    menu
   end
 
   def select_item
@@ -158,49 +160,18 @@ class VendingMachineInterface < VendingMachineModel
     menu
   end
 
-  def before_throw_money
+  def throw_money_interface
     puts "お金を入れてください\n10, 50, 100, 500, 1000"
     money = gets.chomp.to_i
     throw_money(money)
-  end
-
-  def throw_money(money)
-    super
-    after_throw_money
-  end
-
-  def after_throw_money
     puts "合計：#{@slot_money}"
-    puts "0:コイン投入を続ける\n1:メニューへ\n2:払い戻し"
+    puts "0:コイン投入を続ける\n1:戻る"
     choice = gets.chomp.to_i
-    if choice == 0
-      before_throw_money
-    elsif choice == 1
-      menu
-    elsif choice == 2
-      return_money
-    else
-      puts "適切な数字を入れてください"
-      after_throw_money
-    end
-  end
-
-  def before_get_item
-    if can_buy?
-      puts "購入できます"
-    else
-      puts "購入できません"
-    end
-    puts "購入しますか？"
-    puts "0:購入する\n1:メニューへ"
-    choice = gets.chomp.to_i
-    if choice == 0
-      get_item
-    elsif choice == 1
+    if choice == 1
       menu
     else
-      puts "適切な数字を入れてください"
-      before_get_item
+      puts "適切な数字を入れてください" if choice != 0
+      throw_money_interface 
     end
   end
 
@@ -208,17 +179,19 @@ class VendingMachineInterface < VendingMachineModel
     puts 'メニューです‼'
     display
     puts "合計金額：#{@slot_money}"
-    puts "0:コイン投入\n1:商品選択\n2:払い戻し\n3:商品管理画面"
+    puts "0:コイン投入\n1:商品選択\n2:払い戻し\n3:商品管理画面\n4:購入を終了する"
     choice = gets.chomp.to_i
     case choice
     when 0
-      before_throw_money
+      throw_money_interface
     when 1
       select_item
     when 2
       return_money
     when 3
       item_menu
+    when 4
+      puts "買い物を終了しました\nありがとうございました！"
     else
       puts "適切な数字を入れてください"
       menu
