@@ -1,6 +1,9 @@
 
 module ItemManagement
+  attr_reader :slot_money, :sales_money
   def initialize
+    @slot_money = 0
+    @sales_money = 0
     p "初期設定：商品を入れ替えるための初期パスワードを設定してください"
     @password = gets.chomp.to_s
     puts "初期設定：いくつまでの商品を格納できるようにしますか？\n３以上の数を入力してください"
@@ -101,13 +104,10 @@ end
 
 class VendingMachineModel
   include ItemManagement
-  attr_reader :slot_money, :sales_money
   MONEY = [10, 50, 100, 500, 1000].freeze
 
   def initialize
     super
-    @slot_money = 0
-    @sales_money = 0
     @items = []
     @items << {price:120,name:'cola',quantity:5}
     @items << {price:100,name:'water',quantity:5}
