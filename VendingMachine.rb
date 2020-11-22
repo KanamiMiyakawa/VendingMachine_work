@@ -132,10 +132,15 @@ class VendingMachineModel
   def select_item
     puts '商品番号を選択してください'
     select = gets.chomp.to_i
-    if select < @items.size
+    if select < @items.size && can_buy?(select)
       get_item(select)
     else
-      puts "\n入力した商品番号は存在しません\n0:商品選択\n1:戻る\n"
+      if select >= @items.size
+        puts "\n入力した商品番号は存在しません\n"
+      else
+        puts "\n商品の在庫がないか、投入金額が足りません\n"
+      end
+      puts "0:商品選択へ戻る\n1:メニューへ\n"
       choice = gets.chomp.to_i
       case choice
       when 0
@@ -146,23 +151,17 @@ class VendingMachineModel
     end
   end
 
-  
+
 
   def get_item(n)
-    if can_buy?(n)
-      @items[n][:quantity] -= 1
-      @sales_money += @items[n][:price]
-      print "#{@items[n][:name]}を購入しました！"
-      sleep(0.5)
-      puts "ガタン"
-      @slot_money -= @items[n][:price]
-      sleep(0.5)
-      menu
-    else
-      p "買えません"
-      @slot_money
-      select_item
-    end
+    @items[n][:quantity] -= 1
+    @sales_money += @items[n][:price]
+    print "#{@items[n][:name]}を購入しました！"
+    sleep(0.5)
+    puts "ガタン"
+    @slot_money -= @items[n][:price]
+    sleep(0.5)
+    menu
   end
 end
 
@@ -178,13 +177,13 @@ class VendingMachineInterface < VendingMachineModel
     money = gets.chomp.to_i
     throw_money(money)
     puts "合計：#{@slot_money}"
-    puts "0:コイン投入を続ける\n1:戻る"
+    puts "0:コイン投入を続ける\n1:メニューへ"
     choice = gets.chomp.to_i
     if choice == 1
       menu
     else
       puts "適切な数字を入れてください" if choice != 0
-      throw_money_interface 
+      throw_money_interface
     end
   end
 
