@@ -30,15 +30,15 @@ end
 ~~~
 
 ### インスタンス変数についての注意()
-@itemsには{price:#,name:'#',quantity:#}の情報を追加してください
+@itemsには{price:#,name:'#',quantity:#,max:#}の情報を追加してください
 ~~~ruby
 class VendingMachineModel
   include ItemManagement
   def initialize
     @items = []
-    @items << {price:120,name:'cola',quantity:5}
-    @items << {price:100,name:'water',quantity:5}
-    @items << {price:200,name:'redbull',quantity:5}
+    @items << {price:120,name:'cola',quantity:5,max:5}
+    @items << {price:100,name:'water',quantity:5,max:5}
+    @items << {price:200,name:'redbull',quantity:5,max:5}
   end
 #省略
 end
