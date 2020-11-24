@@ -9,9 +9,8 @@ module ItemManagement
     @password = gets.chomp.to_s
     puts "初期設定：いくつまでの商品を格納できるようにしますか？\n３以上の数を入力してください"
     loop do
-      n = gets.chomp.to_i
-      if n > 2
-        @item_limit = n
+      @item_limit = choice
+      if @item_limit > 2
         break
       else
         p "有効な数字かつ3以上を入力してください"
@@ -49,8 +48,7 @@ module ItemManagement
 
   def check_password
     p 'パスワードを入力してください'
-    password = gets.chomp
-    if password.to_s == @password
+    if gets.chomp.to_s == @password
       true
     else
       puts "パスワードが間違っています\n前の画面に戻ります"
@@ -61,50 +59,42 @@ module ItemManagement
 
   def item_add
     p '値段を設定してください'
-    price = gets.to_i
+    price = gets.chomp.to_i
     p '商品名を設定してください'
     name = gets.chomp.to_s
     p '初期在庫数を設定してください'
-    quantity = gets.to_i
+    quantity = gets.chomp.to_i
     @items << {price: price, name: name, quantity: quantity, max: quantity}
   end
 
   def item_delete
     p "削除する商品の番号を入力"
-    select_item = gets.chomp.to_i
-    puts "商品番号#{select_item} 名前：#{@items[select_item][:name]}を削除しました"
-    @items.delete_at(select_item)
+    i = gets.chomp.to_i
+    puts "商品番号#{i} 名前：#{@items[i][:name]}を削除しました"
+    @items.delete_at(i)
   end
 
   def item_restore
     p "在庫補充する商品の番号を入力"
-    select_item = gets.chomp.to_i
-    @items[select_item][:quantity] = @items[select_item][:max]
-    puts "商品番号：#{select_item} 名前：#{@items[select_item][:name]}を#{@items[select_item][:max]}個に補充しました"
+    i = gets.chomp.to_i
+    @items[i][:quantity] = @items[i][:max]
+    puts "商品番号：#{i} 名前：#{@items[i][:name]}を#{@items[i][:max]}個に補充しました"
   end
 
-  def can_buy?(n)
-    if @managing && @items[n][:quantity] > 0
-      true
-    elsif self.slot_money >= @items[n][:price] && @items[n][:quantity] > 0
-      true
-    else
-      false
-    end
+  def can_buy?(i)
+    (@managing && @items[i][:quantity] > 0) || (self.slot_money >= @items[i][:price] && @items[i][:quantity] > 0)
   end
 
   def display
-    n = 0
     puts "\n------------------------------------------\n"
-    @items.each do |item|
-      puts "\n商品番号：#{n}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
-      if can_buy?(n)
+    @items.each_with_index do |item,i|
+      puts "\n商品番号：#{i}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
+      if can_buy?(i)
         puts ">購入できます<"
       else
         puts ">現在購入できません<"
       end
       puts "\n------------------------------------------\n"
-      n += 1
     end
   end
 
@@ -134,13 +124,13 @@ class VendingMachineModel
     @slot_money = 0
   end
 
-  def get_item(n)
-    @items[n][:quantity] -= 1
-    @sales_money += @items[n][:price]
-    print "#{@items[n][:name]}を購入しました！"
+  def get_item(i)
+    @items[i][:quantity] -= 1
+    @sales_money += @items[i][:price]
+    @slot_money -= @items[i][:price]
+    print "#{@items[i][:name]}を購入しました！"
     sleep(0.5)
     puts "ガタン"
-    @slot_money -= @items[n][:price]
     sleep(0.5)
   end
 end
@@ -204,11 +194,11 @@ class VendingMachineInterface < VendingMachineModel
 
   def select_item
     puts '商品番号を選択してください'
-    select = choice
-    if select < @items.size && can_buy?(select)
-      get_item(select)
+    i = choice
+    if i < @items.size && can_buy?(i)
+      get_item(i)
     else
-      if select >= @items.size
+      if i >= @items.size
         puts "\n入力した商品番号は存在しません\n"
       else
         puts "\n商品の在庫がないか、投入金額が足りません\n"
@@ -220,5 +210,4 @@ class VendingMachineInterface < VendingMachineModel
 
 end
 
-#ItemManagement.new
 vm = VendingMachineInterface.new
