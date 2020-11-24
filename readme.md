@@ -1,45 +1,25 @@
-## ItemManagementをincludeするときの注意
+統合案
 
-### メソッドについての注意
-ItemManagementモジュールのitem_menuメソッド '3:メニューにもどる' の
-menuメソッドはクラス内にないので、継承するクラス内に作る必要があります。
+### 全体の構造、構造に関する注意点
+- 一度インスタンスを作成すると、そのまま自動的に購入フローが進行する
+VendingMachineInterfaceクラスのmenuメソッドでループし、そこから各メソッドに分岐
+menuメソッド内のreturnでフローが終了する
+- module ItemManagement : 商品管理に関する使いまわしの効くメソッド
+- class VendingMachineModel : インスタンスとして実際の数値の加工、保存
+- class VendingMachineInterface : Model内の各メソッドをつなぐインターフェイス
 
-例
-~~~ruby
-class VendingMachineInterface < VendingMachineModel
-#省略
-  def menu
-    puts "合計金額：#{@slot_money}"
-    puts "0:コイン投入\n1:商品選択\n2:払い戻し\n3:商品管理画面"
-    choice = gets.chomp.to_i
-    case choice
-    when 0
-      before_throw_money
-    when 1
-      select_item
-    when 2
-      return_money
-    when 3
-      item_menu
-    else
-      puts "適切な数字を入れてください"
-      menu
-    end
-  end
-end
-~~~
 
-### インスタンス変数についての注意()
-@itemsには{price:#,name:'#',quantity:#,max:#}の情報を追加してください
-~~~ruby
-class VendingMachineModel
-  include ItemManagement
-  def initialize
-    @items = []
-    @items << {price:120,name:'cola',quantity:5,max:5}
-    @items << {price:100,name:'water',quantity:5,max:5}
-    @items << {price:200,name:'redbull',quantity:5,max:5}
-  end
-#省略
-end
-~~~
+### こだわったポイント
+- module ItemManagementを他の自動販売機にも使えるように設計
+- スムーズでなるべく無駄のないメソッド間の遷移(Interface)
+- 自動化しつつ、操作していて現在フローのどこにいるか分かりやすい構造を作る
+
+### この辺はどうすればいいか？
+- このコードの中に正規表現を使ったほうがよい箇所はあるか
+- 冗長な箇所があるか、どこが特に読みにくいか
+- 今のItemManagementはmoduleとして使える形でない気がする、本来のmoduleにするにはどう改善すればいいか？
+以下問題点
+  - ItemManagement内に、下位クラスで定義しなければならない変数がある
+  - アイテム管理以外に、Interface的な役割も担って、フローの一部を規定してしまっている
+  - initializeでパスや在庫の初期設定をしているが、ここでしてしまっていいのか？
+  - VendingMachineInterfaceもmoduleにして、Modelと併せて３つを継承する実行クラスを作ってもよさそう
