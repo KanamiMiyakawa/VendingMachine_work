@@ -4,7 +4,7 @@ module ItemManagement
   def initialize
     @slot_money = 0
     @sales_money = 0
-    @managing = 0
+    @managing = false
     p "初期設定：商品を入れ替えるための初期パスワードを設定してください"
     @password = gets.chomp.to_s
     puts "初期設定：いくつまでの商品を格納できるようにしますか？\n３以上の数を入力してください"
@@ -41,7 +41,7 @@ module ItemManagement
     when 3
       item_restore
     when 4
-      @managing = 0
+      @managing = false
       menu
     else
       p "有効な数字を入力してください"
@@ -91,7 +91,7 @@ module ItemManagement
   end
 
   def can_buy?(n)
-    if @managing == 1 && @items[n][:quantity] > 0
+    if @managing && @items[n][:quantity] > 0
       true
     elsif self.slot_money >= @items[n][:price] && @items[n][:quantity] > 0
       true
@@ -144,7 +144,7 @@ class VendingMachineModel
   def return_money
     puts "#{@slot_money}円返却しました"
     @slot_money = 0
-    menu
+    # menu <= コメントアウト
   end
 
   def get_item(n)
@@ -180,11 +180,13 @@ class VendingMachineInterface < VendingMachineModel
       select_item
     when 2
       return_money
+      menu # <= 追加
     when 3
       check_password
-      @managing = 1
+      @managing = true
       item_menu
     when 4
+      return_money if @slot_money != 0 # <= 追加
       puts "買い物を終了しました\nありがとうございました！"
     else
       puts "適切な数字を入れてください"
