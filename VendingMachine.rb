@@ -1,4 +1,6 @@
-
+# includeすることで、moduleで定義されているメソッドが使えるようになる
+# 継承でもうまい抽象化ができないようなメソッドの共有で切り出す時に初めてでてくるぐらい
+# classに分ける→抽象化できそうな段階で継承→それでもおさまらない時にmodule使う
 module ItemManagement
   attr_reader :slot_money, :sales_money
   def initialize
@@ -48,6 +50,8 @@ module ItemManagement
 
   def check_password
     p 'パスワードを入力してください'
+    # パスワードの文字に制限があるなら正規表現でチェックすることはできそう
+    # Railsだと、DBにできるので、そっちに保存するとかにはなりそう
     if gets.chomp.to_s == @password
       true
     else
@@ -82,12 +86,19 @@ module ItemManagement
   end
 
   def can_buy?(i)
+    return false if @items[i][:quantity] <= 0
+
+    if @managing
+
+    else
+
+    end
     (@managing && @items[i][:quantity] > 0) || (self.slot_money >= @items[i][:price] && @items[i][:quantity] > 0)
   end
 
-  def display
+  def display(items)
     puts "\n------------------------------------------\n"
-    @items.each_with_index do |item,i|
+    items.each_with_index do |item,i|
       puts "\n商品番号：#{i}\n名前：#{item[:name]}\n値段：#{item[:price]}\n在庫：#{item[:quantity]}"
       if can_buy?(i)
         puts ">購入できます<"
@@ -98,17 +109,19 @@ module ItemManagement
     end
   end
 
+  # こういう使い方は良さそう
   def choice
     gets.chomp.to_i
   end
 end
 
-class VendingMachineModel
+class VendingMachineModel < ItemManagement
   include ItemManagement
   MONEY = [10, 50, 100, 500, 1000].freeze
 
   def initialize
     super
+    # itemsがなければmoduleも動かないのは違和感ある
     @items = []
     @items << {price:120,name:'cola',quantity:5,max:5}
     @items << {price:100,name:'water',quantity:5,max:5}
@@ -135,16 +148,20 @@ class VendingMachineModel
   end
 end
 
-class VendingMachineInterface < VendingMachineModel
+class VendingMachineInterface
   def initialize
+    @vending_machine = VendingMachineModel.new
     super
     puts "いらっしゃいませ！！"
     menu
   end
 
+
+  # 画面上入出力を切り出す方針もあり
   def menu
     loop do
       sleep(0.5)
+      # 画面がある前提で出している
       puts "\n■-□-■-□-■-□-■-□-■-□-■-□-■-□-■-□-■-□-■-□-■\n"
       puts 'メニューです‼'
       display
